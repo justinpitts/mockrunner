@@ -30,11 +30,13 @@ import com.mockrunner.jms.DestinationManager;
  */
 public class MockConnection implements Connection, Serializable
 {
-	
-	private static final Log logger = LogFactory.getLog(MockConnection.class);
-	
+
+  private static final long serialVersionUID = -3650943690247902805L;
+
+  private static final Log logger = LogFactory.getLog(MockConnection.class);
+
     private ConnectionMetaData metaData;
-    private List sessions;
+    private List<MockSession> sessions;
     private String clientId;
     private boolean started;
     private boolean closed;
@@ -44,27 +46,27 @@ public class MockConnection implements Connection, Serializable
     private ConfigurationManager configurationManager;
     private String userName;
     private String password;
-    
+
     public MockConnection(DestinationManager destinationManager, ConfigurationManager configurationManager)
-    { 
+    {
         this(destinationManager, configurationManager, null, null);
     }
-    
+
     public MockConnection(DestinationManager destinationManager, ConfigurationManager configurationManager, String userName, String password)
-    { 
+    {
         metaData = new MockConnectionMetaData();
         started = false;
         closed = false;
         exception = null;
         this.destinationManager = destinationManager;
         this.configurationManager = configurationManager;
-        sessions = new ArrayList();
+        sessions = new ArrayList<>();
         this.userName = userName;
         this.password = password;
         if(logger.isDebugEnabled())
         	logger.debug("Created new mock connection");
     }
-    
+
     /**
      * Returns the user name.
      * @return the user name
@@ -91,7 +93,7 @@ public class MockConnection implements Connection, Serializable
     {
         return destinationManager;
     }
-    
+
     /**
      * Returns the {@link com.mockrunner.jms.ConfigurationManager}.
      * @return the {@link com.mockrunner.jms.ConfigurationManager}
@@ -100,12 +102,12 @@ public class MockConnection implements Connection, Serializable
     {
         return configurationManager;
     }
-    
+
     /**
      * Returns the list of {@link MockSession} objects.
      * @return the list
      */
-    public List getSessionList()
+    public List<MockSession> getSessionList()
     {
         return Collections.unmodifiableList(sessions);
     }
@@ -119,9 +121,9 @@ public class MockConnection implements Connection, Serializable
     public MockSession getSession(int index)
     {
         if(sessions.size() <= index || index < 0) return null;
-        return (MockSession)sessions.get(index);
+        return sessions.get(index);
     }
-    
+
     /**
      * Set an exception that will be thrown when calling one
      * of the interface methods. Since the mock implementation
@@ -147,7 +149,7 @@ public class MockConnection implements Connection, Serializable
         exception = null;
         throw tempException;
     }
-    
+
     /**
      * Calls the <code>ExceptionListener</code>
      * if an exception is set {@link #setJMSException}.
@@ -159,7 +161,7 @@ public class MockConnection implements Connection, Serializable
         exception = null;
         callExceptionListener(tempException);
     }
-    
+
     /**
      * Calls the <code>ExceptionListener</code>
      * using the specified exception.
@@ -172,7 +174,7 @@ public class MockConnection implements Connection, Serializable
             listener.onException(exception);
         }
     }
-    
+
     /**
      * You can use this to set the <code>ConnectionMetaData</code>.
      * Usually this should not be necessary. Per default an instance
@@ -184,69 +186,80 @@ public class MockConnection implements Connection, Serializable
     {
         this.metaData = metaData;
     }
-    
-    public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException
+
+  @Override
+  public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException
     {
         throwJMSException();
         MockSession session = new MockSession(this, transacted, acknowledgeMode);
         sessions().add(session);
         return session;
     }
-    
-    public ConnectionConsumer createConnectionConsumer(Destination destination, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
+
+  @Override
+  public ConnectionConsumer createConnectionConsumer(Destination destination, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
     {
         throwJMSException();
         return new MockConnectionConsumer(this, sessionPool);
     }
 
-    public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
+  @Override
+  public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
     {
         return createConnectionConsumer(topic, messageSelector, sessionPool, maxMessages);
     }
-    
-    public ConnectionMetaData getMetaData() throws JMSException
+
+  @Override
+  public ConnectionMetaData getMetaData() throws JMSException
     {
         throwJMSException();
         return metaData;
     }
-        
-    public String getClientID() throws JMSException
+
+  @Override
+  public String getClientID() throws JMSException
     {
         throwJMSException();
         return clientId;
     }
 
-    public void setClientID(String clientId) throws JMSException
+  @Override
+  public void setClientID(String clientId) throws JMSException
     {
         throwJMSException();
         this.clientId = clientId;
-    }  
+    }
 
-    public ExceptionListener getExceptionListener() throws JMSException
+  @Override
+  public ExceptionListener getExceptionListener() throws JMSException
     {
         throwJMSException();
         return listener;
     }
 
-    public void setExceptionListener(ExceptionListener listener) throws JMSException
+  @Override
+  public void setExceptionListener(ExceptionListener listener) throws JMSException
     {
         throwJMSException();
         this.listener = listener;
     }
 
-    public void start() throws JMSException
+  @Override
+  public void start() throws JMSException
     {
         throwJMSException();
         started = true;
     }
 
-    public void stop() throws JMSException
+  @Override
+  public void stop() throws JMSException
     {
         throwJMSException();
         started = false;
     }
 
-    public void close() throws JMSException
+  @Override
+  public void close() throws JMSException
     {
         throwJMSException();
         for (Object session1 : sessions) {
@@ -257,23 +270,23 @@ public class MockConnection implements Connection, Serializable
         if(logger.isDebugEnabled())
         	logger.debug("Closed mock connection");
     }
-    
+
     public boolean isStarted()
     {
         return started;
     }
-    
+
     public boolean isStopped()
     {
         return !isStarted();
     }
-    
+
     public boolean isClosed()
     {
         return closed;
     }
-    
-    protected List sessions()
+
+    protected List<MockSession> sessions()
     {
         return sessions;
     }

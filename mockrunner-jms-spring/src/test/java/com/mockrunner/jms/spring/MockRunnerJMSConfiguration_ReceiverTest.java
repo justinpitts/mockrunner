@@ -2,11 +2,7 @@ package com.mockrunner.jms.spring;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import javax.inject.Inject;
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -37,26 +33,26 @@ public class MockRunnerJMSConfiguration_ReceiverTest {
     @Configuration
     @Import({MockRunnerJMSConfiguration.class})
     static class MyConfig {
-        
+
         @Bean
         JmsReceiver sender() {
             return new JmsReceiver();
         }
-        
+
         @Bean(name="queue/fileImport")
         Queue fakeQueue(DestinationManager dm) {
             return dm.createQueue("queue/fileImport");
         }
 
     }
-    
+
     @Inject
     JmsReceiver receiver;
     @Inject
     Queue queue;
     @Inject
     JMSTestModule jmsTestModule;
-    
+
     @Test
     public void testVerifyReceivingAMessageWorks() throws Exception {
         /*

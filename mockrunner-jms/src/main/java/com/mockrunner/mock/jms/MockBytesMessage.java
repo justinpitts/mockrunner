@@ -22,10 +22,12 @@ import com.mockrunner.base.NestedApplicationException;
  */
 public class MockBytesMessage extends MockMessage implements BytesMessage
 {
+
+    private static final long serialVersionUID = 6308036429588965733L;
     private DataOutputStream outStream;
     private ByteArrayOutputStream byteOutStream;
     private DataInputStream inStream;
-    
+
     public MockBytesMessage()
     {
         try
@@ -37,7 +39,8 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
             throw new NestedApplicationException(exc);
         }
     }
-    
+
+    @Override
     public long getBodyLength() throws JMSException
     {
         if(isInWriteMode())
@@ -47,6 +50,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         return outStream.size();
     }
 
+    @Override
     public boolean readBoolean() throws JMSException
     {
         if(isInWriteMode())
@@ -67,6 +71,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public byte readByte() throws JMSException
     {
         if(isInWriteMode())
@@ -87,6 +92,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public int readUnsignedByte() throws JMSException
     {
         if(isInWriteMode())
@@ -107,6 +113,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public short readShort() throws JMSException
     {
         if(isInWriteMode())
@@ -127,6 +134,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public int readUnsignedShort() throws JMSException
     {
         if(isInWriteMode())
@@ -147,6 +155,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public char readChar() throws JMSException
     {
         if(isInWriteMode())
@@ -167,6 +176,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public int readInt() throws JMSException
     {
         if(isInWriteMode())
@@ -187,6 +197,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public long readLong() throws JMSException
     {
         if(isInWriteMode())
@@ -207,6 +218,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public float readFloat() throws JMSException
     {
         if(isInWriteMode())
@@ -227,6 +239,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public double readDouble() throws JMSException
     {
         if(isInWriteMode())
@@ -247,6 +260,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public String readUTF() throws JMSException
     {
         if(isInWriteMode())
@@ -267,6 +281,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public int readBytes(byte[] data) throws JMSException
     {
         if(isInWriteMode())
@@ -287,6 +302,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public int readBytes(byte[] data, int length) throws JMSException
     {
         if(isInWriteMode())
@@ -307,6 +323,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeBoolean(boolean value) throws JMSException
     {
         if(!isInWriteMode())
@@ -323,6 +340,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeByte(byte value) throws JMSException
     {
         if(!isInWriteMode())
@@ -339,6 +357,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeShort(short value) throws JMSException
     {
         if(!isInWriteMode())
@@ -355,6 +374,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeChar(char value) throws JMSException
     {
         if(!isInWriteMode())
@@ -371,6 +391,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeInt(int value) throws JMSException
     {
         if(!isInWriteMode())
@@ -387,6 +408,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeLong(long value) throws JMSException
     {
         if(!isInWriteMode())
@@ -403,6 +425,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeFloat(float value) throws JMSException
     {
         if(!isInWriteMode())
@@ -419,6 +442,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeDouble(double value) throws JMSException
     {
         if(!isInWriteMode())
@@ -435,6 +459,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeUTF(String value) throws JMSException
     {
         if(!isInWriteMode())
@@ -451,6 +476,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeBytes(byte[] data) throws JMSException
     {
         if(!isInWriteMode())
@@ -467,6 +493,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeBytes(byte[] data, int offset, int length) throws JMSException
     {
         if(!isInWriteMode())
@@ -483,53 +510,54 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public void writeObject(Object object) throws JMSException
     {
         if(!isInWriteMode())
         {
             throw new MessageNotWriteableException("Message is in read mode");
         }
-        if(object instanceof Byte) 
+        if(object instanceof Byte)
         {
             writeByte((Byte) object);
             return;
         }
-        if(object instanceof Short) 
+        if(object instanceof Short)
         {
             writeShort((Short) object);
             return;
         }
-        if(object instanceof Integer) 
+        if(object instanceof Integer)
         {
             writeInt((Integer) object);
             return;
         }
-        if(object instanceof Long) 
+        if(object instanceof Long)
         {
             writeLong((Long) object);
             return;
         }
-        if(object instanceof Float) 
+        if(object instanceof Float)
         {
             writeFloat((Float) object);
             return;
         }
-        if(object instanceof Double) 
+        if(object instanceof Double)
         {
             writeDouble((Double) object);
             return;
         }
-        if(object instanceof Character) 
+        if(object instanceof Character)
         {
             writeChar((Character) object);
             return;
         }
-        if(object instanceof Boolean) 
+        if(object instanceof Boolean)
         {
             writeBoolean((Boolean) object);
             return;
         }
-        if(object instanceof String) 
+        if(object instanceof String)
         {
             writeUTF((String)object);
             return;
@@ -542,6 +570,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         throw new MessageFormatException(object.getClass().getName() + " is an invalid type");
     }
 
+    @Override
     public void reset() throws JMSException
     {
         setReadOnly(true);
@@ -555,14 +584,15 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
         inStream = new DataInputStream(new ByteArrayInputStream(byteOutStream.toByteArray()));
     }
-    
+
+    @Override
     public void clearBody() throws JMSException
     {
         super.clearBody();
         byteOutStream = new ByteArrayOutputStream();
         outStream = new DataOutputStream(byteOutStream);
     }
-    
+
     /**
      * Returns a copy of the underlying byte data regardless if the message
      * is in read or write mode.
@@ -580,10 +610,11 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
         return byteOutStream.toByteArray();
     }
-    
+
     /**
      * Compares the underlying byte data.
      */
+    @Override
     public boolean equals(Object otherObject)
     {
         if(null == otherObject) return false;
@@ -594,6 +625,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         return Arrays.equals(firstData, secondData);
     }
 
+    @Override
     public int hashCode()
     {
         int value = 17;
@@ -603,7 +635,8 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
         return value;
     }
-    
+
+    @Override
     public Object clone()
     {
         MockBytesMessage message = (MockBytesMessage)super.clone();
@@ -619,6 +652,7 @@ public class MockBytesMessage extends MockMessage implements BytesMessage
         }
     }
 
+    @Override
     public String toString()
     {
         StringBuilder buffer = new StringBuilder();

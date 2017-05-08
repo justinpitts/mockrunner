@@ -21,6 +21,10 @@ import com.mockrunner.base.NestedApplicationException;
  */
 public class MockMessage implements Message, Cloneable, Serializable
 {
+    private static final long serialVersionUID = -2148569108190675500L;
+
+    private static final String CORRELATION_ID_ENCODING = "ISO-8859-1";
+
     private String messageId;
     private long timestamp;
     private String correlationId;
@@ -32,10 +36,10 @@ public class MockMessage implements Message, Cloneable, Serializable
     private long expiration;
     private int priority;
     private boolean acknowledged;
-    private Map properties;
+    private Map<String,Object> properties;
     private boolean isInWriteMode;
     private boolean isInWriteModeProperties;
-    
+
     public MockMessage()
     {
         messageId = null;
@@ -45,42 +49,47 @@ public class MockMessage implements Message, Cloneable, Serializable
         expiration = 0;
         priority = 4;
         acknowledged = false;
-        properties = new HashMap();
+        properties = new HashMap<>();
         isInWriteMode = true;
         isInWriteModeProperties = true;
     }
-    
+
     public boolean isAcknowledged()
     {
         return acknowledged;
     }
-    
+
+    @Override
     public String getJMSMessageID() throws JMSException
     {
         return messageId;
     }
 
+    @Override
     public void setJMSMessageID(String messageId) throws JMSException
     {
         this.messageId = messageId;
     }
 
+    @Override
     public long getJMSTimestamp() throws JMSException
     {
         return timestamp;
     }
 
+    @Override
     public void setJMSTimestamp(long timestamp) throws JMSException
     {
         this.timestamp = timestamp;
     }
 
+    @Override
     public byte[] getJMSCorrelationIDAsBytes() throws JMSException
     {
         if(null == correlationId) return null;
         try
         {
-            return correlationId.getBytes("ISO-8859-1");
+            return correlationId.getBytes(CORRELATION_ID_ENCODING);
         }
         catch(UnsupportedEncodingException exc)
         {
@@ -88,6 +97,7 @@ public class MockMessage implements Message, Cloneable, Serializable
         }
     }
 
+    @Override
     public void setJMSCorrelationIDAsBytes(byte[] correlationId) throws JMSException
     {
         try
@@ -98,7 +108,7 @@ public class MockMessage implements Message, Cloneable, Serializable
             }
             else
             {
-                this.correlationId = new String(correlationId, "ISO-8859-1");
+                this.correlationId = new String(correlationId, CORRELATION_ID_ENCODING);
             }
         }
         catch(UnsupportedEncodingException exc)
@@ -107,97 +117,116 @@ public class MockMessage implements Message, Cloneable, Serializable
         }
     }
 
+    @Override
     public void setJMSCorrelationID(String correlationId) throws JMSException
     {
         this.correlationId = correlationId;
     }
 
+    @Override
     public String getJMSCorrelationID() throws JMSException
     {
         return correlationId;
     }
 
+    @Override
     public Destination getJMSReplyTo() throws JMSException
     {
         return replyTo;
     }
 
+    @Override
     public void setJMSReplyTo(Destination replyTo) throws JMSException
     {
         this.replyTo = replyTo;
     }
 
+    @Override
     public Destination getJMSDestination() throws JMSException
     {
         return destination;
     }
 
+    @Override
     public void setJMSDestination(Destination destination) throws JMSException
     {
         this.destination = destination;
     }
 
+    @Override
     public int getJMSDeliveryMode() throws JMSException
     {
         return deliveryMode;
     }
 
+    @Override
     public void setJMSDeliveryMode(int deliveryMode) throws JMSException
     {
         this.deliveryMode = deliveryMode;
     }
 
+    @Override
     public boolean getJMSRedelivered() throws JMSException
     {
         return redelivered;
     }
 
+    @Override
     public void setJMSRedelivered(boolean redelivered) throws JMSException
     {
         this.redelivered = redelivered;
     }
 
+    @Override
     public String getJMSType() throws JMSException
     {
         return type;
     }
 
+    @Override
     public void setJMSType(String type) throws JMSException
     {
         this.type = type;
     }
 
+    @Override
     public long getJMSExpiration() throws JMSException
     {
         return expiration;
     }
 
+    @Override
     public void setJMSExpiration(long expiration) throws JMSException
     {
         this.expiration = expiration;
     }
 
+    @Override
     public int getJMSPriority() throws JMSException
     {
         return priority;
     }
 
+    @Override
     public void setJMSPriority(int priority) throws JMSException
     {
         this.priority = priority;
     }
 
+    @Override
     public void clearProperties() throws JMSException
     {
         isInWriteModeProperties = true;
         properties.clear();
     }
 
+    @Override
     public boolean propertyExists(String name) throws JMSException
     {
         return properties.containsKey(name);
     }
 
+    @Override
     public boolean getBooleanProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -213,9 +242,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return (Boolean) value;
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to boolean");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "boolean"));
     }
 
+    @Override
     public byte getByteProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -231,9 +261,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return ((Number)value).byteValue();
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to byte");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "byte"));
     }
 
+    @Override
     public short getShortProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -249,9 +280,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return ((Number)value).shortValue();
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to short");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "short"));
     }
 
+    @Override
     public int getIntProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -267,9 +299,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return ((Number)value).intValue();
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to int");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "int"));
     }
 
+    @Override
     public long getLongProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -285,9 +318,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return ((Number)value).longValue();
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to long");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "long"));
     }
 
+    @Override
     public float getFloatProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -303,9 +337,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return ((Number)value).floatValue();
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to float");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "float"));
     }
 
+    @Override
     public double getDoubleProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -321,9 +356,10 @@ public class MockMessage implements Message, Cloneable, Serializable
         {
             return ((Number)value).doubleValue();
         }
-        throw new MessageFormatException("Cannot convert property " + name + " of type " + value.getClass().getName() + " to double");
+        throw new MessageFormatException(buildConversionErrorMessage(name, value, "double"));
     }
 
+    @Override
     public String getStringProperty(String name) throws JMSException
     {
         Object value = getObjectProperty(name);
@@ -331,56 +367,67 @@ public class MockMessage implements Message, Cloneable, Serializable
         return value.toString();
     }
 
+    @Override
     public Object getObjectProperty(String name) throws JMSException
     {
         return properties.get(name);
     }
 
-    public Enumeration getPropertyNames() throws JMSException
+    @Override
+    public Enumeration<String> getPropertyNames() throws JMSException
     {
-        return new Vector(properties.keySet()).elements();
+        return new Vector<>(properties.keySet()).elements();
     }
 
+    @Override
     public void setBooleanProperty(String name, boolean value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setByteProperty(String name, byte value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setShortProperty(String name, short value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setIntProperty(String name, int value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setLongProperty(String name, long value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setFloatProperty(String name, float value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setDoubleProperty(String name, double value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setStringProperty(String name, String value) throws JMSException
     {
         setObjectProperty(name, value);
     }
 
+    @Override
     public void setObjectProperty(String name, Object object) throws JMSException
     {
         if(!isInWriteModeProperties)
@@ -400,32 +447,35 @@ public class MockMessage implements Message, Cloneable, Serializable
         throw new MessageFormatException(object.getClass().getName() + " not a valid type");
     }
 
+    @Override
     public void acknowledge() throws JMSException
     {
         acknowledged = true;
     }
 
+    @Override
     public void clearBody() throws JMSException
     {
         isInWriteMode = true;
     }
-    
+
     public void setReadOnly(boolean isReadOnly)
     {
         isInWriteMode = !isReadOnly;
     }
-    
+
     public void setReadOnlyProperties(boolean isReadOnly)
     {
         isInWriteModeProperties = !isReadOnly;
     }
-    
+
+    @Override
     public Object clone()
     {
         try
         {
             MockMessage clone = (MockMessage)super.clone();
-            clone.properties = new HashMap(properties);
+            clone.properties = new HashMap<>(properties);
             return clone;
         }
         catch(CloneNotSupportedException exc)
@@ -433,7 +483,7 @@ public class MockMessage implements Message, Cloneable, Serializable
             throw new NestedApplicationException(exc);
         }
     }
-    
+
     protected boolean isInWriteMode()
     {
         return isInWriteMode;
@@ -442,4 +492,8 @@ public class MockMessage implements Message, Cloneable, Serializable
     protected String getNullPropertyMessage(String name) {
       return String.format("Property %s was null", name);
     }
+
+  protected String buildConversionErrorMessage(String name, Object value, final String targetType) {
+      return String.format("Cannot convert property %s of type %s to %s ", name,value.getClass().getName(), targetType);
+  }
 }
